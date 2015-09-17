@@ -17,10 +17,16 @@ app.post('/callback', function(req, res){
 });
 
 io.on('connection', function(socket){
+  io.emit('connected');
   Instagram.tags.info({
     name: 'lollapalooza',
     complete: function(data){
       io.emit('tag data', data);
+    },
+    error: function(errorMessage, errorObject, caller){
+      console.log(errorMessage);// errorMessage is the raised error message
+      console.log(errorObject);// errorObject is either the object that caused the issue, or the nearest neighbor
+      console.log(caller);// caller is the method in which the error occurred
     }
   });
 
