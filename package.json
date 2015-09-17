@@ -5,6 +5,7 @@
   "dependencies": {
     "express": "^4.10.2",
     "instagram-node-lib": "^0.1.1",
-    "socket.io": "^1.3.6"
+    "socket.io": "^1.3.6",
+    "winston": "^1.0.1"
   }
 }

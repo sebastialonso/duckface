@@ -2,7 +2,13 @@ var app = require('express')();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var Instagram = require('instagram-node-lib');
+var winston = require('winston');
 
+//Winston setting
+winston.add(winston.transports.File, { filename: 'duckface.log'});
+winston.remove(winston.transports.Console);
+
+//Instagram setting
 Instagram.set('client_id', process.env.INSTA_CLIENT_ID);
 Instagram.set('client_secret', process.env.INSTA_CLIENT_SECRET);
 Instagram.set('callback_url', process.env.INSTA_CALLBACK);
@@ -17,16 +23,19 @@ app.post('/callback', function(req, res){
 });
 
 io.on('connection', function(socket){
+  winston.info('Connected');
   io.emit('connected');
   Instagram.tags.info({
     name: 'lollapalooza',
     complete: function(data){
       io.emit('tag data', data);
+      winston.info('Tag data successfully returned');
     },
     error: function(errorMessage, errorObject, caller){
-      console.log(errorMessage);// errorMessage is the raised error message
-      console.log(errorObject);// errorObject is either the object that caused the issue, or the nearest neighbor
-      console.log(caller);// caller is the method in which the error occurred
+      winston.error('Couldnt get tag data');
+      winston.error(errorMessage)
+      winston.error(errorObject);
+      winston.error(caller);
     }
   });
 
