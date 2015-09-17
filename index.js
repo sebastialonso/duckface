@@ -3,15 +3,19 @@ var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var Instagram = require('instagram-node-lib');
 var winston = require('winston');
+var config = require('config');
 
 //Winston setting
 winston.add(winston.transports.File, { filename: 'duckface.log'});
 winston.remove(winston.transports.Console);
 
 //Instagram setting
-Instagram.set('client_id', process.env.INSTA_CLIENT_ID);
-Instagram.set('client_secret', process.env.INSTA_CLIENT_SECRET);
-Instagram.set('callback_url', process.env.INSTA_CALLBACK);
+Instagram.set('client_id', config.get('clientId'));
+Instagram.set('client_secret', config.get('clientSecret'));
+Instagram.set('callback_url', config.get('callback'));
+winston.debug('client_id:' + config.get('clientId'));
+winston.debug('client_secret:' + config.get('clientSecret'));
+winston.debug('callback:' + config.get('callback'));
 
 app.get('/', function(req, res){
   res.sendfile('index.html');
