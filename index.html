@@ -36,7 +36,7 @@
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-backstretch/2.0.4/jquery.backstretch.min.js"></script>
     <!--<script type="text/javascript" src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>-->
     <script>
-      var socket = io();
+      var socket = io('http://45.55.140.0');
       socket.on('tag data', function(data){
         console.log(data);
         var left = 0,
@@ -54,17 +54,15 @@
         // console.log("showing " + data[index].images.standard_resolution.url);
 
         setInterval(function(){
-          left = middle;
-          middle = right;
-          right = right + 1;
-          // $("#image").attr('src', data[index].images.standard_resolution.url)
-          $("#left").css('background-image', 'url(' + data[left].images.standard_resolution.url + ')');
-          $("#middle").css('background-image', 'url(' + data[middle].images.standard_resolution.url + ')');
-          $("#right").css('background-image', 'url(' + data[right].images.standard_resolution.url + ')');
-          // $("#pic").backstretch(data[index].images.standard_resolution.url);
-            // .css('width', data[index].images.standard_resolution.width)
-            // .css('height', data[index].images.standard_resolution.height)
-            // .css('background-image', 'url(' + data[index].images.standard_resolution.url + ')');
+          if (right <= data.length - 1) {
+            left = middle;
+            middle = right;
+            right = right + 1;
+            // $("#image").attr('src', data[index].images.standard_resolution.url)
+            $("#left").css('background-image', 'url(' + data[left].images.standard_resolution.url + ')');
+            $("#middle").css('background-image', 'url(' + data[middle].images.standard_resolution.url + ')');
+            $("#right").css('background-image', 'url(' + data[right].images.standard_resolution.url + ')');
+          };
           index += 1;
         }, 5000);
       });
