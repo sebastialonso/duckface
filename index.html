@@ -65,7 +65,6 @@
             // .css('width', data[index].images.standard_resolution.width)
             // .css('height', data[index].images.standard_resolution.height)
             // .css('background-image', 'url(' + data[index].images.standard_resolution.url + ')');
-          console.log("showing " + data[index].images.standard_resolution.url);
           index += 1;
         }, 5000);
       });
@@ -78,8 +77,8 @@
         return results;
       };
 
-      socket.on('callback reached', function(data){
-        console.log("callback reached");
+      socket.on('callback detected', function(data){
+        console.log("callback detected");
         console.log(data);
       })
     </script>

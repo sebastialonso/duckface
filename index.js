@@ -1,9 +1,13 @@
 var app = require('express')();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
+var bodyParser = require('body-parser');
 var Instagram = require('instagram-node-lib');
 var winston = require('winston');
 var config = require('config');
+
+
+app.use(bodyParser.json()); // for parsing application/json
 
 //Winston setting
 winston.add(winston.transports.File, { filename: 'duckface.log'});
@@ -26,7 +30,6 @@ Instagram.subscriptions.subscribe({
   object: 'tag',
   object_id: 'lollapalooza2013',
   aspect: 'media',
-  callback_url: 'http://YOUR_URL.com/callback',
   type: 'subscription',
   id: '#'
 });
@@ -39,7 +42,9 @@ app.get('/', function(req, res){
  * Needed to receive the handshake
  */
 app.get('/callback', function(req, res){
-    var handshake =  Instagram.subscriptions.handshake(req, res);
+  winston.info("Callback GET detected");
+  winston.info(req.body);
+  var handshake =  Instagram.subscriptions.handshake(req, res);
 });
 
 app.post('/callback', function(req, res){
@@ -49,7 +54,7 @@ app.post('/callback', function(req, res){
   // concatenate to the url and send as a argument to the client side
   data.forEach(function(tag) {
     var url = 'https://api.instagram.com/v1/tags/' + tag.object_id + '/media/recent?client_id='+config.get('clientId');
-    io.emit('callback recieved', url);
+    io.emit('callback detected', url );
   });
   
   res.end();
