@@ -1,0 +1,20 @@
+{
+  "name": "socket.io_chat",
+  "main": "index.js",
+  "version": "0.0.0",
+  "homepage": "https://github.com/sebastialonso/duckface",
+  "authors": [
+    "Sebastian Gonzalez <sebagonz91@gmail.com>"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "bootstrap": "~3.3.5"
+  }
+}

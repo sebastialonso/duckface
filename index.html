@@ -12,28 +12,71 @@
       #messages li { padding: 5px 10px; }
       #messages li:nth-child(odd) { background: #eee; }*/
     </style>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
   </head>
   <body style="margin:0;">
-    <div style="background-color: black; height:100vh;">
+    <div id="bg" style="background-color: black; height:100vh;">
       <center> <span style="color:white;  font-size: 4rem; font-weight: bold;">#test</span></center>
     </div>
+    <div id="stage" style="display:none;">      
+      <div id="left" class="col-md-4" style="height: 100vh;">
+        <img id="image" src="">  
+      </div>
+      <div id="middle" class="col-md-4" style="height: 100vh;">
+        <img id="image" src="">  
+      </div>
+      <div id="right" class="col-md-4" style="height: 100vh;">
+        <img id="image" src="">  
+      </div>
+    </div>
+    <!-- Scripts -->
     <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
     <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-backstretch/2.0.4/jquery.backstretch.min.js"></script>
+    <!--<script type="text/javascript" src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>-->
     <script>
       var socket = io();
-      // $('form').submit(function(){
-      //   socket.emit('chat message', $('#m').val());
-      //   $('#m').val('');
-      //   return false;
-      // });
-      
-      // socket.on('chat message', function(msg){
-      //   $('#messages').append($('<li>' ).text(msg));
-      // });
-
       socket.on('tag data', function(data){
         console.log(data);
+        var left = 0,
+            middle = 1,
+            right= 2;
+        // var images = getImageArray(data);
+        $("#bg").css('display', 'none');
+        $("#stage").css('display', 'inherit');
+        
+        // $("#image").attr('src', data[index].images.standard_resolution.url)
+        $("#left").css('background-image', 'url(' + data[left].images.standard_resolution.url + ')');
+        $("#middle").css('background-image', 'url(' + data[middle].images.standard_resolution.url + ')');
+        $("#right").css('background-image', 'url(' + data[right].images.standard_resolution.url + ')');
+        // $("#pic").backstretch(data[index].images.standard_resolution.url);
+        // console.log("showing " + data[index].images.standard_resolution.url);
+
+        setInterval(function(){
+          left = middle;
+          middle = right;
+          right = right + 1;
+          // $("#image").attr('src', data[index].images.standard_resolution.url)
+          $("#left").css('background-image', 'url(' + data[left].images.standard_resolution.url + ')');
+          $("#middle").css('background-image', 'url(' + data[middle].images.standard_resolution.url + ')');
+          $("#right").css('background-image', 'url(' + data[right].images.standard_resolution.url + ')');
+          // $("#pic").backstretch(data[index].images.standard_resolution.url);
+            // .css('width', data[index].images.standard_resolution.width)
+            // .css('height', data[index].images.standard_resolution.height)
+            // .css('background-image', 'url(' + data[index].images.standard_resolution.url + ')');
+          console.log("showing " + data[index].images.standard_resolution.url);
+          index += 1;
+        }, 5000);
       });
+
+      getImageArray = function(data){
+        var results = [];
+        $.each(data, function(index){
+          results.push(data[index].images.standard_resolution.url) 
+        });
+        return results;
+      };
 
       socket.on('callback reached', function(data){
         console.log("callback reached");

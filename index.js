@@ -17,23 +17,53 @@ winston.debug('client_id:' + config.get('clientId'));
 winston.debug('client_secret:' + config.get('clientSecret'));
 winston.debug('callback:' + config.get('callback'));
 
+/**
+ * Uses the library "instagram-node-lib" to Subscribe to the Instagram API Real Time
+ * with the tag "hashtag" lollapalooza2013
+ * @type {String}
+ */
+Instagram.subscriptions.subscribe({
+  object: 'tag',
+  object_id: 'lollapalooza2013',
+  aspect: 'media',
+  callback_url: 'http://YOUR_URL.com/callback',
+  type: 'subscription',
+  id: '#'
+});
+
 app.get('/', function(req, res){
   res.sendfile('index.html');
 });
 
+/**
+ * Needed to receive the handshake
+ */
+app.get('/callback', function(req, res){
+    var handshake =  Instagram.subscriptions.handshake(req, res);
+});
+
 app.post('/callback', function(req, res){
-  io.emit('callback reached', req.body);
+  var data = req.body;
+  winston.info(data);
+  // Grab the hashtag "tag.object_id"
+  // concatenate to the url and send as a argument to the client side
+  data.forEach(function(tag) {
+    var url = 'https://api.instagram.com/v1/tags/' + tag.object_id + '/media/recent?client_id='+config.get('clientId');
+    io.emit('callback recieved', url);
+  });
+  
   res.end();
 });
 
 io.on('connection', function(socket){
+  socket.setMaxListeners(10);
   winston.info('Connected');
   io.emit('connected');
-  Instagram.tags.info({
-    name: 'lollapalooza',
+  Instagram.tags.recent({
+    name: 'holamundo',
     complete: function(data){
       io.emit('tag data', data);
-      winston.info('Tag data successfully returned');
+      winston.info('#holamundo pics returned successfully');
     },
     error: function(errorMessage, errorObject, caller){
       winston.error('Couldnt get tag data');
@@ -43,7 +73,6 @@ io.on('connection', function(socket){
     }
   });
 
-  
   //Desconectar
   io.on('disconnect', function(){
     console.log('user disconnected');
