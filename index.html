@@ -37,8 +37,13 @@
     <!--<script type="text/javascript" src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>-->
     <script>
       var socket = io('http://45.55.140.0');
+      var min_id = null;
+      var max_id = null;
       socket.on('tag data', function(data){
         console.log(data);
+        max_id = data[0].id.split("_")[0];
+        min_id = data[data.length - 1].id.split("_")[0];
+        
         var left = 0,
             middle = 1,
             right= 2;
@@ -54,7 +59,7 @@
         // console.log("showing " + data[index].images.standard_resolution.url);
 
         setInterval(function(){
-          if (right <= data.length - 1) {
+          if (right <= data.length - 2) {
             left = middle;
             middle = right;
             right = right + 1;
@@ -62,8 +67,7 @@
             $("#left").css('background-image', 'url(' + data[left].images.standard_resolution.url + ')');
             $("#middle").css('background-image', 'url(' + data[middle].images.standard_resolution.url + ')');
             $("#right").css('background-image', 'url(' + data[right].images.standard_resolution.url + ')');
-          };
-          index += 1;
+          } 
         }, 5000);
       });
 
@@ -75,9 +79,8 @@
         return results;
       };
 
-      socket.on('callback detected', function(data){
-        console.log("callback detected");
-        console.log(data);
+      socket.on('tag limit reached', function(data){
+        console.log("Deberia llamar para acutalizar");
       })
     </script>
   </body>

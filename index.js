@@ -23,15 +23,15 @@ winston.debug('callback:' + config.get('callback'));
 
 /**
  * Uses the library "instagram-node-lib" to Subscribe to the Instagram API Real Time
- * with the tag "hashtag" lollapalooza2013
+ * with the tag "hashtag" holamundo
  * @type {String}
  */
 Instagram.subscriptions.subscribe({
   object: 'tag',
-  object_id: 'lollapalooza2013',
+  object_id: 'holamundo',
   aspect: 'media',
   type: 'subscription',
-  id: '#'
+  id: '20062966'
 });
 
 app.get('/', function(req, res){
@@ -43,21 +43,29 @@ app.get('/', function(req, res){
  */
 app.get('/callback', function(req, res){
   winston.info("Callback GET detected");
-  winston.info(req.body);
+  winston.info(req.query);
   var handshake =  Instagram.subscriptions.handshake(req, res);
+  console.log(req.query);
+  winston.log('info', req.query["hub.challenge"]);
+  res.send(req.query["hub.challenge"]);
 });
 
+
 app.post('/callback', function(req, res){
-  var data = req.body;
-  winston.info(data);
-  // Grab the hashtag "tag.object_id"
-  // concatenate to the url and send as a argument to the client side
-  data.forEach(function(tag) {
-    var url = 'https://api.instagram.com/v1/tags/' + tag.object_id + '/media/recent?client_id='+config.get('clientId');
-    io.emit('callback detected', url );
-  });
-  
-  res.end();
+  if (limit == 0) {
+    limit = 2;
+    var data = req.body;
+    winston.info(data);
+    // Grab the hashtag "tag.object_id"
+    // concatenate to the url and send as a argument to the client side
+    data.forEach(function(tag) {
+      var url = 'https://api.instagram.com/v1/tags/' + tag.object_id + '/media/recent?client_id='+config.get('clientId');
+      io.emit('tag limit reached');
+    });
+    res.end();
+  } else{
+    limit -= 1;
+  };
 });
 
 io.on('connection', function(socket){
@@ -66,6 +74,7 @@ io.on('connection', function(socket){
   io.emit('connected');
   Instagram.tags.recent({
     name: 'holamundo',
+    count: 5,
     complete: function(data){
       io.emit('tag data', data);
       winston.info('#holamundo pics returned successfully');
