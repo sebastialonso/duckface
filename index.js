@@ -5,7 +5,7 @@ var bodyParser = require('body-parser');
 var Instagram = require('instagram-node-lib');
 var winston = require('winston');
 var config = require('config');
-
+var limit = 2;
 
 app.use(bodyParser.json()); // for parsing application/json
 
@@ -47,7 +47,7 @@ app.get('/callback', function(req, res){
   var handshake =  Instagram.subscriptions.handshake(req, res);
   console.log(req.query);
   winston.log('info', req.query["hub.challenge"]);
-  res.send(req.query["hub.challenge"]);
+  //res.send(req.query["hub.challenge"]);
 });
 
 
@@ -56,12 +56,21 @@ app.post('/callback', function(req, res){
     limit = 2;
     var data = req.body;
     winston.info(data);
-    // Grab the hashtag "tag.object_id"
-    // concatenate to the url and send as a argument to the client side
-    data.forEach(function(tag) {
-      var url = 'https://api.instagram.com/v1/tags/' + tag.object_id + '/media/recent?client_id='+config.get('clientId');
-      io.emit('tag limit reached');
-    });
+    
+    Instagram.tags.recent({
+      name: 'instachile',
+      count: 2,
+      complete: function(data) {
+        io.emit('tag limit reached', data);
+      },
+      error: function(data){
+        winston.error("Algo sucedio")
+        winston.error(errorMessage)
+        winston.error(errorObject);
+        winston.error(caller);
+      }
+    })
+    
     res.end();
   } else{
     limit -= 1;
