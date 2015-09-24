@@ -23,15 +23,15 @@ winston.debug('callback:' + config.get('callback'));
 
 /**
  * Uses the library "instagram-node-lib" to Subscribe to the Instagram API Real Time
- * with the tag "hashtag" holamundo
+ * with the tag "hashtag" instachile
  * @type {String}
  */
 Instagram.subscriptions.subscribe({
   object: 'tag',
-  object_id: 'holamundo',
+  object_id: 'instachile',
   aspect: 'media',
   type: 'subscription',
-  id: '20062966'
+  id: '#'
 });
 
 app.get('/', function(req, res){
@@ -73,11 +73,11 @@ io.on('connection', function(socket){
   winston.info('Connected');
   io.emit('connected');
   Instagram.tags.recent({
-    name: 'holamundo',
+    name: 'instachile',
     count: 5,
     complete: function(data){
       io.emit('tag data', data);
-      winston.info('#holamundo pics returned successfully');
+      winston.info('#instachile pics returned successfully');
     },
     error: function(errorMessage, errorObject, caller){
       winston.error('Couldnt get tag data');
